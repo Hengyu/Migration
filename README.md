@@ -1,5 +1,5 @@
 # Migration
-Manages blocks of code that only need to run once on version updates in iOS apps.
+Manages blocks of code that need to run once on version updates in iOS apps. This could be anything from data normalization routines, "What's New In This Version" screens, or bug fixes.
 This is the Swift version of [MTMigration][1].
 ## Install
 ### Carthage

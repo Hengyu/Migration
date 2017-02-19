@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 hengyu. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for Migration.
 FOUNDATION_EXPORT double MigrationVersionNumber;

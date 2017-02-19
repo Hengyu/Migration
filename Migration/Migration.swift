@@ -1,141 +1,136 @@
 //
 //  Migration.swift
-//  Migration
+//  WriteBot
 //
-//  Created by hengyu on 15/6/6.
+//  Created by hengyu on 15/5/11.
 //  Copyright (c) 2015年 hengyu. All rights reserved.
 //
 
 import Foundation
 
 private enum MigrationKey: String {
-    case LastVersion    = "Migration.lastVersion"
-    case LastAppVersion = "Migration.lastAppVersion"
-    case LastBuild      = "Migration.lastBuild"
-    case LastAppBuild   = "Migration.lastAppBuild"
-    case AppVersion     = "Migration.appVersion"
-    case AppBuild       = "Migration.appBuild"
+    case lastVersion    = "Migration.lastVersion"
+    case lastAppVersion = "Migration.lastAppVersion"
+    case lastBuild      = "Migration.lastBuild"
+    case lastAppBuild   = "Migration.lastAppBuild"
+    case appVersion     = "Migration.appVersion"
+    case appBuild       = "Migration.appBuild"
     
     func value() -> String {
         switch self {
-        case .AppVersion:
-            return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
-        case .AppBuild:
-            return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as! String
+        case .appVersion:
+            return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+        case .appBuild:
+            return Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
         default:
-            let res = NSUserDefaults.standardUserDefaults().valueForKey(self.rawValue) as? String
+            let res = UserDefaults.standard.value(forKey: self.rawValue) as? String
             return res ?? ""
         }
     }
     
-    func setValue(value: String) {
+    func setValue(_ value: String) {
         switch self {
-        case .AppVersion:
+        case .appVersion:
             break
-        case .AppBuild:
+        case .appBuild:
             break
         default:
-            NSUserDefaults.standardUserDefaults().setValue(value, forKey: self.rawValue)
-            NSUserDefaults.standardUserDefaults().synchronize()
+            UserDefaults.standard.setValue(value, forKey: self.rawValue)
+            UserDefaults.standard.synchronize()
         }
     }
     
     func reset() {
-        NSUserDefaults.standardUserDefaults().setValue("", forKey: self.rawValue)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        UserDefaults.standard.setValue("", forKey: self.rawValue)
+        UserDefaults.standard.synchronize()
     }
     
-    static func valueForKey(key: MigrationKey) -> String {
+    static func valueForKey(_ key: MigrationKey) -> String {
         return key.value()
     }
     
-    static func setValue(value: String, forKey key: MigrationKey) {
+    static func setValue(_ value: String, forKey key: MigrationKey) {
         key.setValue(value)
     }
     
     static func reset() {
-        LastVersion.reset()
-        LastAppVersion.reset()
-        LastBuild.reset()
-        LastAppBuild.reset()
+        lastVersion.reset()
+        lastAppVersion.reset()
+        lastBuild.reset()
+        lastAppBuild.reset()
     }
 }
 
 /**
-*  Migration lets app to execute a function when app's version or build increased.
-*/
-public class Migration {
+ *  Migration lets app to execute a function when app's version or build increased.
+ */
+open class Migration {
     
     /**
-    Executes a block of code for a specific version number and remembers this version as the latest migration done by Migration.
-    
-    :param: version   A string with a specific version number.
-    :param: execution A closure to be executed when the application version matches the string 'version'.
-    */
-    public class func migrateToVersion(version: String, execution: (() -> Void)) {
+     Executes a block of code for a specific version number and remembers this version as the latest migration done by Migration.
+     
+     - parameter version:   A string with a specific version number.
+     - parameter execution: A closure to be executed when the application version matches the string 'version'.
+     */
+    open class func migrate(toVersion version: String, execution: (() -> Void)) {
         // version > lastMigrationVersion && version <= appVersion
-        if version.compare(MigrationKey.valueForKey(.LastVersion), options: .NumericSearch) == .OrderedDescending && version.compare(MigrationKey.valueForKey(.AppVersion), options: .NumericSearch) != .OrderedDescending {
+        if version.compare(MigrationKey.valueForKey(.lastVersion), options: .numeric) == .orderedDescending && version.compare(MigrationKey.valueForKey(.appVersion), options: .numeric) != .orderedDescending {
             execution()
-            #if DEBUG
-                println("Migration: Running migration for version \(version)")
-            #endif
-            MigrationKey.setValue(version, forKey: .LastVersion)
+            debugPrint("Migration: Running migration for version \(version)")
+            MigrationKey.setValue(version, forKey: .lastVersion)
         }
     }
     
     /**
-    Executes a block of code for a specific build number and remembers this build as the latest migration done by Migration.
-    
-    :param: build     A string with a specific build number.
-    :param: execution A closure to be executed when the application build matches the string 'build'.
-    */
-    public class func migrateToBuild(build: String, execution: (() -> Void)) {
+     Executes a block of code for a specific build number and remembers this build as the latest migration done by Migration.
+     
+     - parameter build:     A string with a specific build number.
+     - parameter execution: A closure to be executed when the application build matches the string 'build'.
+     */
+    open class func migrate(toBuild build: String, execution: (() -> Void)) {
         // build > lastMigrationBuild && build <= appVersion
-        if build.compare(MigrationKey.valueForKey(.LastBuild), options: .NumericSearch) == .OrderedDescending && build.compare(MigrationKey.valueForKey(.AppBuild), options: .NumericSearch) != .OrderedDescending {
+        if build.compare(MigrationKey.valueForKey(.lastBuild), options: .numeric) == .orderedDescending && build.compare(MigrationKey.valueForKey(.appBuild), options: .numeric) != .orderedDescending {
             execution()
-            #if DEBUG
-                println("Migration: Running migration for build \(build)")
-            #endif
-            MigrationKey.setValue(build, forKey: .LastBuild)
+            debugPrint("Migration: Running migration for build \(build)")
+            MigrationKey.setValue(build, forKey: .lastBuild)
         }
     }
     
     /**
-    Executes a block of code for every time the application version changes.
-    
-    :param: execution A closure to be executed when the application version changes.
-    */
-    public class func applicationUpdateExecution(execution: (() -> Void)) {
-        let appVersion = MigrationKey.valueForKey(.AppVersion)
-        if MigrationKey.valueForKey(.LastAppVersion) !=  appVersion {
+     Executes a block of code for every time the application version changes.
+     
+     - parameter execution: A closure to be executed when the application version changes.
+     */
+    open class func applicationUpdate(execution: @escaping (Void) -> Void) {
+        let appVersion = MigrationKey.valueForKey(.appVersion)
+        if MigrationKey.valueForKey(.lastAppVersion) !=  appVersion {
             execution()
-            #if DEBUG
-                println("Migration: Running update Block for version \(appVersion)")
-            #endif
-            MigrationKey.setValue(appVersion, forKey: .LastAppVersion)
+            debugPrint("Migration: Running update Block for version \(appVersion)")
+            MigrationKey.setValue(appVersion, forKey: .lastAppVersion)
         }
     }
     
     /**
-    Executes a block of code for every time the application build number changes.
-    
-    :param: execution A closure to be executed when the application build number changes.
-    */
-    public class func buildNumberUpdateExecution(execution: (() -> Void)) {
-        let appBuild = MigrationKey.valueForKey(.AppBuild)
-        if MigrationKey.valueForKey(.LastAppBuild) !=  appBuild {
+     Executes a block of code for every time the application build number changes.
+     
+     - parameter execution: A closure to be executed when the application build number changes.
+     */
+    open class func buildNumberUpdate(execution: @escaping (Void) -> Void) {
+        let appBuild = MigrationKey.valueForKey(.appBuild)
+        if MigrationKey.valueForKey(.lastAppBuild) !=  appBuild {
             execution()
-            #if DEBUG
-                println("Migration: Running update Block for version \(appVersion)")
-            #endif
-            MigrationKey.setValue(appBuild, forKey: .LastAppBuild)
+            debugPrint("Migration: Running update Block for build \(appBuild)")
+            MigrationKey.setValue(appBuild, forKey: .lastAppBuild)
         }
     }
     
     /**
-    Clears the last migration remembered by Migration. Causes all migrations to run from the beginning.
-    */
-    public class func reset() {
+     Clears the last migration remembered by Migration. Causes all migrations to run from the beginning.
+     */
+    open class func reset() {
         MigrationKey.reset()
     }
 }
+
+
+
