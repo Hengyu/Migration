@@ -65,15 +65,21 @@ private enum MigrationKey: String {
 /// Migration lets app to execute a function when app's version or build increased.
 public final class Migration {
 
-    /// Executes a block of code for a specific version number and remembers this version as the latest migration done by Migration.
+    /// Executes a block of code for a specific version number and remembers this version as the latest migration.
     /// - Parameters:
     ///   - version: A string with a specific version number.
     ///   - execution: A closure to be executed when the application version matches the string 'version'.
     public class func migrate(toVersion version: String, execution: (() -> Void)) {
         // version > lastMigrationVersion && version <= appVersion
         if
-            version.compare(MigrationKey.emptyableValue(forKey: .lastVersion), options: .numeric) == .orderedDescending &&
-            version.compare(MigrationKey.emptyableValue(forKey: .appVersion), options: .numeric) != .orderedDescending
+            version.compare(
+                MigrationKey.emptyableValue(forKey: .lastVersion),
+                options: .numeric
+            ) == .orderedDescending &&
+            version.compare(
+                MigrationKey.emptyableValue(forKey: .appVersion),
+                options: .numeric
+            ) != .orderedDescending
         {
             execution()
             debugPrint("Migration: Running migration for version \(version)")
@@ -81,7 +87,7 @@ public final class Migration {
         }
     }
 
-    /// Executes a block of code for a specific build number and remembers this build as the latest migration done by Migration.
+    /// Executes a block of code for a specific build number and remembers this build as the latest migration.
     /// - Parameters:
     ///   - build: A string with a specific build number.
     ///   - execution: A closure to be executed when the application build matches the string 'build'.
