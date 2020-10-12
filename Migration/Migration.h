@@ -3,7 +3,7 @@
 //  Migration
 //
 //  Created by hengyu on 15/6/6.
-//  Copyright (c) 2015年 hengyu. All rights reserved.
+//  Copyright (c) 2015 hengyu. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
