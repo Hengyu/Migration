@@ -6,18 +6,17 @@ This is the Swift version of [MTMigration][1].
 
 ## Installation
 
-#### Manual
-
-Download the .zip from this repo and drag the `/Migration` folder into your project.
-
-#### Swift Package Manager
-
-In Xcode 11 or newer versions you can add packages by going to *File \> Swift Packages \> Add Package Dependency*. Copy in this repos [URL][2] and go from there.
+`Migration` could be installed via [Swift Package Manager](https://www.swift.org/package-manager/). Open Xcode and go to **File** -> **Add Packages...**, search `https://github.com/hengyu/Migration.git`, and add the package as one of your project's dependency.
 
 ## Usage
 
-Still working...
-You can see the comments in code first.
+```swift
+Migration.applicationUpdate {
+    // do your migration code here
+    self.cache.clear()
+    self.preferenceStore.reset()
+}
+```
 
 ## Notes
 
@@ -28,4 +27,4 @@ Migration is released under the [MIT License][3].
 
 [1]:	https://github.com/mysterioustrousers/MTMigration
 [2]:	https://github.com/hengyu/Migration.git
-[3]:	https://github.com/Hengyu/Migration/blob/master/LICENSE
+[3]:	https://github.com/Hengyu/Migration/blob/main/LICENSE
