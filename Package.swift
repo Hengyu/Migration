@@ -14,14 +14,7 @@ let package = Package(
         .library(name: "Migration", targets: ["Migration"])
     ],
     targets: [
-        .target(
-            name: "Migration",
-            path: "Migration"
-        ),
-        .testTarget(
-            name: "MigrationTests",
-            dependencies: ["Migration"],
-            path: "MigrationTests"
-        )
+        .target(name: "Migration"),
+        .testTarget(name: "MigrationTests", dependencies: ["Migration"])
     ]
 )
