@@ -16,14 +16,12 @@ let package = Package(
     targets: [
         .target(
             name: "Migration",
-            path: "Migration",
-            exclude: ["Info.plist", "Migration.h"]
+            path: "Migration"
         ),
         .testTarget(
             name: "MigrationTests",
             dependencies: ["Migration"],
-            path: "MigrationTests",
-            exclude: ["Info.plist"]
+            path: "MigrationTests"
         )
     ]
 )
