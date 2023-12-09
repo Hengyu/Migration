@@ -8,13 +8,20 @@
 
 import Foundation
 
-private enum MigrationKey: String {
-    case lastVersion    = "Migration.lastVersion"
-    case lastAppVersion = "Migration.lastAppVersion"
-    case lastBuild      = "Migration.lastBuild"
-    case lastAppBuild   = "Migration.lastAppBuild"
-    case appVersion     = "Migration.appVersion"
-    case appBuild       = "Migration.appBuild"
+private struct MigrationKey: Equatable, Hashable, ExpressibleByStringLiteral {
+    private let underlying: String
+    private let userDefaults: UserDefaults = .standard
+
+    static let lastVersion: MigrationKey = "Migration.lastVersion"
+    static let lastAppVersion: MigrationKey = "Migration.lastAppVersion"
+    static let lastBuild: MigrationKey = "Migration.lastBuild"
+    static let lastAppBuild: MigrationKey = "Migration.lastAppBuild"
+    static let appVersion: MigrationKey = "Migration.appVersion"
+    static let appBuild: MigrationKey = "Migration.appBuild"
+
+    init(stringLiteral value: StringLiteralType) {
+        underlying = value
+    }
 
     func value() -> String? {
         switch self {
@@ -23,7 +30,9 @@ private enum MigrationKey: String {
         case .appBuild:
             return Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
         case .lastVersion, .lastAppVersion, .lastBuild, .lastAppBuild:
-            return UserDefaults.standard.value(forKey: rawValue) as? String
+            return userDefaults.string(forKey: underlying)
+        default:
+            return nil
         }
     }
 
@@ -32,14 +41,16 @@ private enum MigrationKey: String {
         case .appVersion, .appBuild:
             break
         case .lastVersion, .lastAppVersion, .lastBuild, .lastAppBuild:
-            UserDefaults.standard.setValue(value, forKey: rawValue)
-            UserDefaults.standard.synchronize()
+            userDefaults.set(value, forKey: underlying)
+            userDefaults.synchronize()
+        default:
+            break
         }
     }
 
     func reset() {
-        UserDefaults.standard.setValue(nil, forKey: rawValue)
-        UserDefaults.standard.synchronize()
+        userDefaults.set(nil, forKey: underlying)
+        userDefaults.synchronize()
     }
 
     static func value(forKey key: MigrationKey) -> String? {
