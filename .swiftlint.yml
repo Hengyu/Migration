@@ -1,4 +1,5 @@
 opt_in_rules:
+  - fallthrough
   - implicit_return
   - let_var_whitespace
   - multiline_arguments
@@ -7,4 +8,6 @@ opt_in_rules:
   - multiline_literal_brackets
   - multiline_parameters
   - multiline_parameters_brackets
+
+analyzer_rules:
   - unused_import
