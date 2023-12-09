@@ -8,13 +8,13 @@ on:
 
 jobs:
   main:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: fwal/setup-swift@v1.14.0
+      - uses: swift-actions/setup-swift@v1
         with:
-          swift-version: "5.5.0"
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+          swift-version: "5.9.0"
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
         with:
           path: .build
           key: ${{ runner.os }}-Migration-${{ hashFiles('**/Package.resolved') }}
